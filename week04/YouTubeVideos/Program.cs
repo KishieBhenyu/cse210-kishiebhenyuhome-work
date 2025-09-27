@@ -1,161 +1,85 @@
 using System;
 using System.Collections.Generic;
 
+public class Comment
+{
+    public string CommenterName { get; set; }
+    public string Text { get; set; }
+
+    public Comment(string commenterName, string text)
+    {
+        CommenterName = commenterName;
+        Text = text;
+    }
+}
+
 public class Video
 {
     public string Title { get; set; }
-    public int Duration { get; set; } 
-    public int Views { get; set; }
-    public int Likes { get; set; }
-    public string Url { get; set; }
+    public string Author { get; set; }
+    public int LengthInSeconds { get; set; }
+    private List<Comment> comments = new List<Comment>();
 
-    public void Play()
+    public Video(string title, string author, int lengthInSeconds)
     {
-        Views++;
-        Console.WriteLine($"Playing video: {Title}");
+        Title = title;
+        Author = author;
+        LengthInSeconds = lengthInSeconds;
     }
 
-    public void Like()
+    public void AddComment(Comment comment)
     {
-        Likes++;
-        Console.WriteLine($"You liked {Title}. Total likes: {Likes}");
+        comments.Add(comment);
     }
 
-    public void Share()
+    public int GetNumberOfComments()
     {
-        Console.WriteLine($"Sharing video: {Title} ({Url})");
+        return comments.Count;
+    }
+
+    public void DisplayVideoDetails()
+    {
+        Console.WriteLine($"Title: {Title}");
+        Console.WriteLine($"Author: {Author}");
+        Console.WriteLine($"Length: {LengthInSeconds} seconds");
+        Console.WriteLine($"Number of comments: {GetNumberOfComments()}");
+
+        Console.WriteLine("Comments:");
+        foreach (var comment in comments)
+        {
+            Console.WriteLine($" - {comment.CommenterName}: {comment.Text}");
+        }
+        Console.WriteLine();
     }
 }
-
-public class Channel
-{
-    public string Name { get; set; }
-    public int Subscribers { get; set; }
-    public List<Video> Videos { get; set; } = new List<Video>();
-
-    public void AddVideo(Video video)
-    {
-        if (!Videos.Contains(video))
-        {
-            Videos.Add(video);
-            Console.WriteLine($"Added video '{video.Title}' to channel '{Name}'");
-        }
-    }
-
-    public void RemoveVideo(Video video)
-    {
-        if (Videos.Contains(video))
-        {
-            Videos.Remove(video);
-            Console.WriteLine($"Removed video '{video.Title}' from channel '{Name}'");
-        }
-    }
-
-    public void ListVideos()
-    {
-        Console.WriteLine($"Videos in {Name}:");
-        foreach (var video in Videos)
-        {
-            Console.WriteLine($"- {video.Title}");
-        }
-    }
-}
-
-public class Playlist
-{
-    public string Name { get; set; }
-    public List<Video> Videos { get; set; } = new List<Video>();
-
-    public void AddVideo(Video video)
-    {
-        if (!Videos.Contains(video))
-        {
-            Videos.Add(video);
-            Console.WriteLine($"Added video '{video.Title}' to playlist '{Name}'");
-        }
-    }
-
-    public void RemoveVideo(Video video)
-    {
-        if (Videos.Contains(video))
-        {
-            Videos.Remove(video);
-            Console.WriteLine($"Removed video '{video.Title}' from playlist '{Name}'");
-        }
-    }
-
-    public void PlayAll()
-    {
-        Console.WriteLine($"Playing playlist: {Name}");
-        foreach (var video in Videos)
-        {
-            video.Play();
-        }
-    }
-}
-
-public class User
-{
-    public string Username { get; set; }
-    public List<Channel> SubscribedChannels { get; set; } = new List<Channel>();
-    public List<Video> LikedVideos { get; set; } = new List<Video>();
-
-    public void Subscribe(Channel channel)
-    {
-        if (!SubscribedChannels.Contains(channel))
-        {
-            SubscribedChannels.Add(channel);
-            channel.Subscribers++;
-            Console.WriteLine($"{Username} subscribed to {channel.Name}");
-        }
-    }
-
-    public void Unsubscribe(Channel channel)
-    {
-        if (SubscribedChannels.Contains(channel))
-        {
-            SubscribedChannels.Remove(channel);
-            channel.Subscribers = Math.Max(0, channel.Subscribers - 1);
-            Console.WriteLine($"{Username} unsubscribed from {channel.Name}");
-        }
-    }
-
-    public void LikeVideo(Video video)
-    {
-        if (!LikedVideos.Contains(video))
-        {
-            video.Like();
-            LikedVideos.Add(video);
-        }
-    }
-}
-
 
 class Program
 {
     static void Main(string[] args)
     {
-       
-        Video video1 = new Video { Title = "C# Tutorial", Url = "http://example.com", Duration = 10 };
-        Video video2 = new Video { Title = "OOP Concepts", Url = "http://example.com", Duration = 15 };
+        // Create videos
+        Video video1 = new Video("Learning C# Basics", "TechGuru", 600);
+        video1.AddComment(new Comment("Alice", "Great explanation!"));
+        video1.AddComment(new Comment("Bob", "Very helpful, thanks."));
+        video1.AddComment(new Comment("Charlie", "Looking forward to more tutorials."));
 
-        
-        Channel channel1 = new Channel { Name = "Code Academy" };
-        channel1.AddVideo(video1);
-        channel1.AddVideo(video2);
-        channel1.ListVideos();
+        Video video2 = new Video("Top 10 Travel Destinations", "Wanderlust", 900);
+        video2.AddComment(new Comment("David", "I want to visit all of them!"));
+        video2.AddComment(new Comment("Eva", "Amazing video quality."));
+        video2.AddComment(new Comment("Frank", "You forgot Bali!"));
 
-        
-        User user1 = new User { Username = "Kishie" };
-        user1.Subscribe(channel1);
-        user1.LikeVideo(video1);
+        Video video3 = new Video("Healthy Recipes", "ChefMaster", 750);
+        video3.AddComment(new Comment("Grace", "Delicious and easy to make!"));
+        video3.AddComment(new Comment("Henry", "Tried this yesterday, turned out great."));
+        video3.AddComment(new Comment("Ivy", "Please share more vegetarian options."));
 
-        
-        Playlist playlist1 = new Playlist { Name = "My Favorites" };
-        playlist1.AddVideo(video1);
-        playlist1.AddVideo(video2);
-        playlist1.PlayAll();
+        // Store videos in a list
+        List<Video> videos = new List<Video> { video1, video2, video3 };
 
-        Console.WriteLine("\nSimulation complete.");
+        // Display all videos and their comments
+        foreach (var video in videos)
+        {
+            video.DisplayVideoDetails();
+        }
     }
 }
